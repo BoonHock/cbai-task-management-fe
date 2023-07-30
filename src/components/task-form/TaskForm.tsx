@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { TaskData } from "../../models/task";
+import { format } from "date-fns";
 
 interface TaskFormProps {
   onFormSubmitted: any;
@@ -95,7 +96,7 @@ const TaskFormComponent = (prop: TaskFormProps) => {
             className="form-control"
             id="inputDueDate"
             ref={dueDateInputRef}
-            value={dueDate.toISOString().slice(0, 10)}
+            value={format(dueDate, "yyyy-MM-dd")}
             onChange={dueDateHandler}
           />
         </div>

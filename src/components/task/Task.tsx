@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Task } from "../../models/task";
-import { addDays } from "date-fns";
+import { addDays, format } from "date-fns";
 
 interface TaskProps {
   task: Task;
@@ -26,8 +26,8 @@ const TaskComponent = (prop: TaskProps) => {
         <h5 className="card-title">{prop.task.name}</h5>
         <div className="card-text">
           <p className="m-0">Description:; {prop.task.description}</p>
-          <p className="m-0">Due: {prop.task.dueDate.toISOString()}</p>
-          <p className="m-0">Created: {prop.task.createdDate.toISOString()}</p>
+          <p className="m-0">Due: {format(prop.task.dueDate, 'dd-MM-yyyy')}</p>
+          <p className="m-0">Created: {format(prop.task.createdDate, 'dd-MM-yyyy')}</p>
           <p className="m-0">status: {statusString}</p>
           <Link to={`/task/${prop.task.id}`}>Edit</Link>
         </div>
