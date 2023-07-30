@@ -1,38 +1,15 @@
 import { Link } from "react-router-dom";
-import { Task } from "../../models/task";
+import { Task, TaskData } from "../../models/task";
 import TaskComponent from "../task/Task";
 import CreateTaskComponent from "../create-task/CreateTask";
-import { useEffect, useRef, useState } from "react";
-
-const fullTasks: Task[] = [
-  {
-    id: "1",
-    name: "title",
-    description: "lorem ipsum",
-    dueDate: new Date("2021-10-10"),
-    createdDate: new Date("2022-10-10"),
-  },
-  {
-    id: "2",
-    name: "title2",
-    description: "afdasfdasfadsf sdfdac",
-    dueDate: new Date("2023-10-10"),
-    createdDate: new Date("2021-10-10"),
-  },
-  {
-    id: "3",
-    name: "3",
-    description: "3",
-    dueDate: new Date("2023-07-31"),
-    createdDate: new Date("2023-10-10"),
-  },
-];
+import { useCallback, useEffect, useRef, useState } from "react";
+import { set } from "date-fns";
 
 const HomeComponent = () => {
   const [enteredSearchInput, setEnteredSearchInput] = useState("");
-  const [tasks, setTasks] = useState<Task[]>(fullTasks);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
-  const [sortBy, setSortBy] = useState(0);
+  const [sortBy, setSortBy] = useState("due");
 
   useEffect(() => {
     if (enteredSearchInput.length === 0) {
@@ -47,27 +24,45 @@ const HomeComponent = () => {
     return () => {
       clearTimeout(identifier);
     };
-  }, [enteredSearchInput]);
+  }, [enteredSearchInput, tasks]);
 
   const searchInputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEnteredSearchInput(event.target.value);
   };
 
   const sortByHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value === "0") {
-      // sort by due date
-    } else {
-      // sort by created date
-    }
+    setSortBy(event.target.value);
   };
 
-  const taskCreatedHandler = () => {
-    console.log("task created");
+  const fetchTasksHandler = useCallback(async (sortBy: string) => {
+    const response = await fetch(
+      `http://localhost:3001/tasks?sortBy=${sortBy}`
+    );
+    const data = await response.json();
+
+    const transformedTasks: Task[] = data.map((taskData: any) => {
+      return {
+        id: taskData.id,
+        name: taskData.name,
+        description: taskData.description,
+        dueDate: new Date(taskData.dueDate),
+        createdDate: new Date(taskData.release_date),
+      } as Task;
+    });
+    setTasks(transformedTasks);
+  }, []);
+
+  useEffect(() => {
+    fetchTasksHandler(sortBy);
+  }, []);
+
+  const onTaskCreated = async () => {
+    fetchTasksHandler(sortBy);
   };
 
   return (
     <>
-      <CreateTaskComponent onFormSubmitted={taskCreatedHandler} />
+      <CreateTaskComponent onTaskCreated={onTaskCreated} />
       <div className="mb-3 row mt-3">
         <label className="col-sm-1 col-form-label">Search</label>
         <div className="col-sm-11">
@@ -88,7 +83,7 @@ const HomeComponent = () => {
                 type="radio"
                 name="inlineRadioOptions"
                 id="inlineRadio1"
-                value="0"
+                value="due"
                 onChange={sortByHandler}
                 defaultChecked
               />
@@ -102,7 +97,7 @@ const HomeComponent = () => {
                 type="radio"
                 name="inlineRadioOptions"
                 id="inlineRadio2"
-                value="1"
+                value="create"
                 onChange={sortByHandler}
               />
               <label className="form-check-label" htmlFor="inlineRadio2">

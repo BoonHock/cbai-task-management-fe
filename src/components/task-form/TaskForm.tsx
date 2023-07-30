@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { TaskData } from "../../models/task";
 
 interface TaskFormProps {
   onFormSubmitted: any;
@@ -11,11 +12,10 @@ const TaskFormComponent = (prop: TaskFormProps) => {
   const nameInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
   const dueDateInputRef = useRef<HTMLInputElement>(null);
-  const closeModalButtonRef = useRef<HTMLButtonElement>(null);
 
   const [isFormValid, setIsFormValid] = useState(true);
 
-  const formSubmissionHandler = (event: any) => {
+  const formSubmissionHandler = async (event: any) => {
     event.preventDefault();
 
     const enteredName = nameInputRef.current?.value;
@@ -28,10 +28,12 @@ const TaskFormComponent = (prop: TaskFormProps) => {
       return;
     }
 
-    // submit form
-    closeModalButtonRef.current?.click();
-
-    prop.onFormSubmitted();
+    const taskData: TaskData = {
+      name: enteredName,
+      description: enteredDescription,
+      dueDate: new Date(enteredDueDate),
+    };
+    await prop.onFormSubmitted(taskData);
   };
 
   return (
