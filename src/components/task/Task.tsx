@@ -27,7 +27,7 @@ const TaskComponent = (prop: TaskProps) => {
         <div className="card-text">
           <p className="m-0">Description:; {prop.task.description}</p>
           <p className="m-0">Due: {prop.task.dueDate.toISOString()}</p>
-          <p className="m-0">Created: {prop.task.dueDate.toISOString()}</p>
+          <p className="m-0">Created: {prop.task.createdDate.toISOString()}</p>
           <p className="m-0">status: {statusString}</p>
           <Link to={`/task/${prop.task.id}`}>Edit</Link>
         </div>

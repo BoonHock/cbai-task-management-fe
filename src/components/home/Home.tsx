@@ -6,25 +6,22 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { set } from "date-fns";
 
 const HomeComponent = () => {
+  const PAGE_SIZE = 5;
+
   const [enteredSearchInput, setEnteredSearchInput] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
   const [sortBy, setSortBy] = useState("due");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    if (enteredSearchInput.length === 0) {
-      setFilteredTasks(tasks);
-    }
     const identifier = setTimeout(() => {
-      const filteredTasks = tasks.filter((task) =>
-        task.name.includes(enteredSearchInput)
-      );
-      setFilteredTasks(filteredTasks);
+      fetchTasksHandler(sortBy, enteredSearchInput, currentPage);
     }, 500);
     return () => {
       clearTimeout(identifier);
     };
-  }, [enteredSearchInput, tasks]);
+  }, [enteredSearchInput]);
 
   const searchInputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEnteredSearchInput(event.target.value);
@@ -34,30 +31,54 @@ const HomeComponent = () => {
     setSortBy(event.target.value);
   };
 
-  const fetchTasksHandler = useCallback(async (sortBy: string) => {
-    const response = await fetch(
-      `http://localhost:3001/tasks?sortBy=${sortBy}`
-    );
-    const data = await response.json();
+  const fetchTasksHandler = useCallback(
+    async (sortBy: string, enteredSearchInput: string, currentPage: number) => {
+      const response = await fetch(
+        `http://localhost:3001/tasks?sortBy=${sortBy}&search=${enteredSearchInput}&page=${currentPage}&limit=${PAGE_SIZE}`
+      );
+      const res = await response.json();
+      const { data, total } = res;
 
-    const transformedTasks: Task[] = data.map((taskData: any) => {
-      return {
-        id: taskData.id,
-        name: taskData.name,
-        description: taskData.description,
-        dueDate: new Date(taskData.dueDate),
-        createdDate: new Date(taskData.release_date),
-      } as Task;
-    });
-    setTasks(transformedTasks);
-  }, []);
+      const transformedTasks: Task[] = data.map((taskData: any) => {
+        return {
+          id: taskData.id,
+          name: taskData.name,
+          description: taskData.description,
+          dueDate: new Date(taskData.dueDate),
+          createdDate: new Date(taskData.createdDate),
+        } as Task;
+      });
+      setTasks(transformedTasks);
+
+      const totalPages = Math.ceil(total / PAGE_SIZE);
+      setTotalPages(totalPages);
+    },
+    []
+  );
 
   useEffect(() => {
-    fetchTasksHandler(sortBy);
-  }, []);
+    fetchTasksHandler(sortBy, enteredSearchInput, currentPage);
+  }, [fetchTasksHandler, sortBy, enteredSearchInput, currentPage]);
 
   const onTaskCreated = async () => {
-    fetchTasksHandler(sortBy);
+    fetchTasksHandler(sortBy, enteredSearchInput, currentPage);
+  };
+
+  const prevHandler = () => {
+    if (currentPage === 1) {
+      return;
+    }
+    setCurrentPage((prev) => prev - 1);
+  };
+
+  const nextHandler = () => {
+    if (currentPage === totalPages) {
+      return;
+    }
+    setCurrentPage((prev) => {
+      console.log(prev + 1);
+      return prev + 1;
+    });
   };
 
   return (
@@ -108,9 +129,26 @@ const HomeComponent = () => {
         </fieldset>
       </div>
       {/* <Link to="/task/create">Create new</Link> */}
-      {filteredTasks.map((task) => (
+      {tasks.map((task) => (
         <TaskComponent key={task.id} task={task} />
       ))}
+      <div>
+        <button
+          itemType="button"
+          className="btn btn-info"
+          onClick={prevHandler}
+        >
+          &lt;
+        </button>
+        &nbsp;page {currentPage} of {totalPages}&nbsp;
+        <button
+          itemType="button"
+          className="btn btn-info"
+          onClick={nextHandler}
+        >
+          &gt;
+        </button>
+      </div>
     </>
   );
 };

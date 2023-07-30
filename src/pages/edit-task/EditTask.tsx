@@ -6,7 +6,6 @@ import { TaskData } from "../../models/task";
 const EditTaskPage = () => {
   const params = useParams();
 
-  const [taskId, setTaskId] = useState("");
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [taskDueDate, setTaskDueDate] = useState(new Date("2023-07-30"));
@@ -38,7 +37,6 @@ const EditTaskPage = () => {
       const response = await fetch(`http://localhost:3001/tasks/${params.id}`);
       const data = await response.json();
 
-      setTaskId(data.id);
       setTaskName(data.name);
       setTaskDescription(data.description);
       setTaskDueDate(new Date(data.dueDate));

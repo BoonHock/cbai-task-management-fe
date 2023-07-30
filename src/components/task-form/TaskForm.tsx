@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TaskData } from "../../models/task";
 
 interface TaskFormProps {
@@ -9,6 +9,8 @@ interface TaskFormProps {
 }
 
 const TaskFormComponent = (prop: TaskFormProps) => {
+  const [dueDate, setDueDate] = useState(new Date());
+
   const nameInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
   const dueDateInputRef = useRef<HTMLInputElement>(null);
@@ -34,6 +36,16 @@ const TaskFormComponent = (prop: TaskFormProps) => {
       dueDate: new Date(enteredDueDate),
     };
     await prop.onFormSubmitted(taskData);
+  };
+
+  useEffect(() => {
+    if (prop.dueDate) {
+      setDueDate(prop.dueDate);
+    }
+  }, [prop.dueDate]);
+
+  const dueDateHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDueDate(new Date(event.target.value));
   };
 
   return (
@@ -76,9 +88,8 @@ const TaskFormComponent = (prop: TaskFormProps) => {
             className="form-control"
             id="inputDueDate"
             ref={dueDateInputRef}
-            defaultValue={(prop.dueDate ? prop.dueDate : new Date())
-              .toISOString()
-              .slice(0, 10)}
+            value={dueDate.toISOString().slice(0, 10)}
+            onChange={dueDateHandler}
           />
         </div>
       </div>
