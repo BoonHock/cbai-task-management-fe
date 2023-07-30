@@ -6,21 +6,21 @@ import { useEffect, useRef, useState } from "react";
 
 const fullTasks: Task[] = [
   {
-    _id: "1",
+    id: "1",
     name: "title",
     description: "lorem ipsum",
     dueDate: new Date("2021-10-10"),
     createdDate: new Date("2022-10-10"),
   },
   {
-    _id: "2",
+    id: "2",
     name: "title2",
     description: "afdasfdasfadsf sdfdac",
     dueDate: new Date("2023-10-10"),
     createdDate: new Date("2021-10-10"),
   },
   {
-    _id: "3",
+    id: "3",
     name: "3",
     description: "3",
     dueDate: new Date("2023-07-31"),
@@ -114,7 +114,7 @@ const HomeComponent = () => {
       </div>
       {/* <Link to="/task/create">Create new</Link> */}
       {filteredTasks.map((task) => (
-        <TaskComponent key={task._id} task={task} />
+        <TaskComponent key={task.id} task={task} />
       ))}
     </>
   );
