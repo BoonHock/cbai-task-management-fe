@@ -1,12 +1,12 @@
 FROM node:18-alpine3.16
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY package.json ./
-COPY package-lock.json ./
-COPY ./ ./
+COPY package*.json ./
 
-RUN npm i
+RUN npm install --quiet
+
+COPY . .
 
 EXPOSE 3000
 
