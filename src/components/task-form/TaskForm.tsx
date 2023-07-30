@@ -37,9 +37,12 @@ const TaskFormComponent = (prop: TaskFormProps) => {
     };
     await prop.onFormSubmitted(taskData);
 
-    nameInputRef.current!.value = "";
-    descriptionInputRef.current!.value = "";
-    setDueDate(new Date());
+    if (!prop.name) {
+      // if adding new, reset the form
+      nameInputRef.current!.value = "";
+      descriptionInputRef.current!.value = "";
+      setDueDate(new Date());
+    }
   };
 
   useEffect(() => {

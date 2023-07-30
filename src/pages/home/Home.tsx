@@ -1,6 +1,6 @@
 import { Task } from "../../models/task";
-import TaskComponent from "../task/Task";
-import CreateTaskComponent from "../create-task/CreateTask";
+import TaskComponent from "../../components/task/Task";
+import CreateTaskComponent from "../../components/create-task/CreateTask";
 import { useCallback, useEffect, useState } from "react";
 
 const HomeComponent = () => {
@@ -78,7 +78,6 @@ const HomeComponent = () => {
       return;
     }
     setCurrentPage((prev) => {
-      console.log(prev + 1);
       return prev + 1;
     });
   };
@@ -130,7 +129,6 @@ const HomeComponent = () => {
           </div>
         </fieldset>
       </div>
-      {/* <Link to="/task/create">Create new</Link> */}
       {tasks.map((task) => (
         <TaskComponent key={task.id} task={task} />
       ))}

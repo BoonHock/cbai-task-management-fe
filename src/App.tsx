@@ -1,7 +1,7 @@
 import "./App.css";
 import { Task } from "./models/task";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import HomeComponent from "./components/home/Home";
+import HomeComponent from "./pages/home/Home";
 import EditTaskPage from "./pages/edit-task/EditTask";
 
 const router = createBrowserRouter([
