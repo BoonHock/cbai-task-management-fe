@@ -1,9 +1,7 @@
-import { Link } from "react-router-dom";
-import { Task, TaskData } from "../../models/task";
+import { Task } from "../../models/task";
 import TaskComponent from "../task/Task";
 import CreateTaskComponent from "../create-task/CreateTask";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { set } from "date-fns";
+import { useCallback, useEffect, useState } from "react";
 
 const HomeComponent = () => {
   const PAGE_SIZE = 5;
@@ -13,10 +11,14 @@ const HomeComponent = () => {
   const [sortBy, setSortBy] = useState("due");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [oldSearchInput, setOldSearchInput] = useState("");
 
   useEffect(() => {
+    if (oldSearchInput === enteredSearchInput) {
+      return;
+    }
     const identifier = setTimeout(() => {
-      fetchTasksHandler(sortBy, enteredSearchInput, currentPage);
+      setOldSearchInput(enteredSearchInput);
     }, 500);
     return () => {
       clearTimeout(identifier);
@@ -58,7 +60,7 @@ const HomeComponent = () => {
 
   useEffect(() => {
     fetchTasksHandler(sortBy, enteredSearchInput, currentPage);
-  }, [fetchTasksHandler, sortBy, enteredSearchInput, currentPage]);
+  }, [fetchTasksHandler, oldSearchInput, sortBy, currentPage]);
 
   const onTaskCreated = async () => {
     fetchTasksHandler(sortBy, enteredSearchInput, currentPage);
